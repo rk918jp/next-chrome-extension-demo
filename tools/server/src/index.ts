@@ -5,15 +5,23 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors());
+app.use(cors({
+  origin: "chrome-extension://jdeilhjkbgljhldjkfplnekbdglipoab",
+  methods: ["GET", "POST", "OPTIONS"],
+  credentials: true,
+}));
 app.use(cookieParser());
 
 app.post("/login", (req, res) => {
-  if (req.body.username === "admin" && req.body.password === "admin") {
-    res.cookie("accessToken", "test", {
-      maxAge: 60 * 60 * 24 * 1000, // 1 day
-      httpOnly: true,
-    });
+  if (req.body.userId === "admin" && req.body.password === "admin") {
+    // NOTE: Cookieの場合
+    // const {secure} = req;
+    // res.cookie("accessToken", "test", {
+    //   maxAge: 60 * 60 * 24 * 1000, // 1 day
+    //   secure,
+    //   httpOnly: true,
+    //   sameSite: secure ? "none" : "lax",
+    // });
     return res.json({
       result: "ok",
       accessToken: "test",
@@ -26,18 +34,32 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("accessToken");
+  // NOTE: Cookieの場合
+  // res.clearCookie("accessToken");
+
+  // TODO: accessTokenを無効化
   return res.json({
     result: "ok",
   });
 });
 
 app.get("/currentUser", (req, res) => {
-  if (req.cookies.accessToken === "test") {
+  // NOTE: Cookieの場合
+  // if (req.cookies.accessToken === "test") {
+  //   return res.json({
+  //     result: "ok",
+  //     user: {
+  //       userId: "admin",
+  //       name: "Admin",
+  //     }
+  //   });
+  // }
+
+  if (req.header("authorization") === "Bearer test") {
     return res.json({
       result: "ok",
-      user: {
-        username: "admin",
+      userInfo: {
+        userId: "admin",
         name: "Admin",
       }
     });
@@ -49,6 +71,6 @@ app.get("/currentUser", (req, res) => {
 });
 
 
-app.listen(8080, () => {
-  console.log("Server is running on port 8080");
+app.listen(8081, () => {
+  console.log("Server is running on port 8081");
 });
