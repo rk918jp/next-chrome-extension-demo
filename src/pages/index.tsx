@@ -13,6 +13,7 @@ import {useEffect, useState} from "react";
 import {axiosInstance} from "@/util/axios";
 import {useForm} from "react-hook-form";
 import Link from "next/link";
+import {useRouter} from "next/router";
 
 const AppBarHeight = 56;
 const PopupWidth = 500;
@@ -48,8 +49,17 @@ const Todo = () => {
   )
 }
 const Home = () => {
+  const router = useRouter();
+  const query = router.query;
   const [initialized, setInitialized] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>();
+  const [taskText, setTaskText] = useState("");
+
+  useEffect(() => {
+    if (query.taskText) {
+      setTaskText(query.taskText as string);
+    }
+  }, [query])
 
   useEffect(() => {
     (async () => {
@@ -119,16 +129,19 @@ const Home = () => {
         </AppBar>
         <Box sx={{p: "10px"}}>
           {userInfo ? (
-              <Box>
+              <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px"}}>
                 <Typography>
-                  ログイン成功
+                  タスクを追加
                 </Typography>
-                <Link href={"/sample"}>
-                  <Button>
-                    /sample
-                  </Button>
-                </Link>
-                <TextField/>
+                <TextField
+                    value={taskText}
+                    onChange={(e) => {
+                      setTaskText(e.target.value);
+                    }}
+                />
+                <Button fullWidth variant={"contained"}>
+                  登録
+                </Button>
               </Box>
           ) : (
               <Box sx={{display: "flex", flexDirection: "column", rowGap: "10px"}} component={"form"}

@@ -7,6 +7,13 @@
     "default_popup": "./dist/index.html"
   },
   "permissions": [
-    "storage"
-  ]
+    "storage",
+    "activeTab",
+    "contextMenus",
+    "clipboardRead",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
